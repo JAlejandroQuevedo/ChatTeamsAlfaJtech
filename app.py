@@ -47,10 +47,10 @@ BOT = alfabot()
 
 # Endpoint de mensajes
 async def messages(req: Request):
-    if req.headers["Content-Type"] == "application/json":
-        body = await req.json()
-    else:
-        return JSONResponse(status_code=HTTPStatus.UNSUPPORTED_MEDIA_TYPE, content={"message": "Unsupported media type"})
+    # if req.headers["Content-Type"] == "application/json":
+    #     body = await req.json()
+    # else:
+    #     return JSONResponse(status_code=HTTPStatus.UNSUPPORTED_MEDIA_TYPE, content={"message": "Unsupported media type"})
 
     activity = Activity().deserialize(body)
     auth_header = req.headers.get("Authorization", "")
