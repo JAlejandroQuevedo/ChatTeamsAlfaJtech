@@ -1,8 +1,8 @@
 botbuilder-azure
 botbuilder-integration-aiohttp
 pinecone-client
-fastapi
-uvicorn
+fastapi==0.100.0
+uvicorn[standard]==0.22.0
 botbuilder-core
 botbuilder-schema
 aiohttp
