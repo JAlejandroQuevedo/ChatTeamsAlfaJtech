@@ -1,0 +1,10 @@
+aiohttp
+botbuilder-core
+botbuilder-schema
+botbuilder-azure
+botbuilder-integration-aiohttp
+openai
+pinecone-client
+azure-search-documents
+gunicorn
+python-dotenv

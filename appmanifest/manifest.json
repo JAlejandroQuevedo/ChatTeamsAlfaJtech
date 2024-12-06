@@ -1,0 +1,52 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.14/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.14",
+    "version": "1.6.0",
+    "id": "7e66a328-ac35-4e72-a990-0b7e6becc36d",
+    "packageName": "mx.jtech",
+    "developer": {
+      "name": "Alfa Corporativo",
+      "websiteUrl": "https://www.alfa.com.mx",
+      "privacyUrl": "https://www.alfa.com.mx",
+      "termsOfUseUrl": "https://www.alfa.com.mx"
+    },
+    "icons": {
+      "outline": "outline.png",
+      "color": "color.png"
+    },
+    "name": {
+      "short": "AlfaBot",
+      "full": "AlfaBot"
+    },
+    "description": {
+      "short": "Brindar apoyo y orientación a los colaboradores de ALFA Corporativo",
+      "full": "La información proporcionada por este chatbot es de carácter informativo y no debe ser utilizada como base única para la toma de decisiones. Nuestro objetivo es ofrecer datos precisos y útiles, sin embargo, recomendamos consultar con el área correspondiente antes de tomar cualquier acción basada en la información obtenida. Agradecemos su comprensión y colaboración."
+    },
+    "accentColor": "#FFFFFF",
+    "bots": [
+      {
+        "botId": "7e66a328-ac35-4e72-a990-0b7e6becc36d",
+        "scopes": [
+          "personal"
+        ],
+        "isNotificationOnly": false,
+        "supportsCalling": false,
+        "supportsVideo": false,
+        "supportsFiles": false,
+          "commandLists": [
+          {
+            "scopes": [
+              "personal"
+            ],
+            "commands": [
+            ]
+          }
+        ]
+      }
+    ],
+    "permissions": [
+      "identity",
+      "messageTeamMembers"
+    ],
+    "validDomains": []
+  }

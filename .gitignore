@@ -1,0 +1,29 @@
+# Archivos de configuración del entorno virtual
+modules/
+
+# Archivos de entorno
+.env
+
+# Directorios de caché de Python
+__pycache__/
+
+# Archivos de compilación y distribución
+*.pyc
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Archivos de configuración de IDEs
+.vscode/
+.idea/
+
+# Archivos temporales y de caché
+*.log
+*.bak
+*.swp
+*~
+.DS_Store
+Thumbs.db
