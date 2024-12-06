@@ -61,10 +61,36 @@ async def messages(req: Request) -> Response:
         return json_response(data=response.body, status=response.status)
     return Response(status=HTTPStatus.OK)
 
+# Create the aiohttp application and add routes
 app = web.Application(middlewares=[aiohttp_error_middleware])
 app.router.add_post("/api/messages", messages)
 
-# Si estás utilizando `uvicorn` para el despliegue en ASGI:
+# Now adapt the aiohttp app for ASGI using the ASGIApp middleware
+from aiohttp import web
+from aiohttp.web import Application
+from uvicorn import Config, Server
+
+# Create ASGI app using aiohttp
+asgi_app = web.Application(middlewares=[aiohttp_error_middleware])
+asgi_app.router.add_post("/api/messages", messages)
+
+# This wrapper allows running the aiohttp app as an ASGI app for uvicorn
+class ASGIApp:
+    def __init__(self, app: Application):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        await self.app(scope, receive, send)
+
+# If you're running this as the main app
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=3979)  # Cambia el puerto si es necesario
+    try:
+        # Wrap the app into an ASGI app
+        app_asgi = ASGIApp(asgi_app)
+        
+        # Use Uvicorn to serve the ASGI app
+        config = Config(app_asgi, host="0.0.0.0", port=3979)
+        server = Server(config)
+        server.run()
+    except Exception as error:
+        raise error
