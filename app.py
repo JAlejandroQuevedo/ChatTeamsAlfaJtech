@@ -74,11 +74,20 @@ async def messages(req: Request) -> Response:
     return Response(status=HTTPStatus.OK)
 
 
+# Convert the aiohttp app to ASGI-compatible app
 app = web.Application(middlewares=[aiohttp_error_middleware])
 app.router.add_post("/api/messages", messages)
 
+# This is where we convert aiohttp to ASGI to be compatible with Uvicorn
+from asgi_aiohttp import ASGIApplication
+
+# Convert the aiohttp app to ASGIApp and run it with Uvicorn
+asgi_app = ASGIApplication(app)
+
 if __name__ == "__main__":
     try:
-        web.run_app(app, host="0.0.0.0", port=CONFIG.PORT)
+        # Replace web.run_app with uvicorn to use ASGI with uvicorn
+        import uvicorn
+        uvicorn.run(asgi_app, host="0.0.0.0", port=3979)
     except Exception as error:
         raise error

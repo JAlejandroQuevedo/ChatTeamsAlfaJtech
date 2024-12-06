@@ -8,3 +8,4 @@ pinecone-client
 azure-search-documents
 uvicorn
 python-dotenv
+asgi_aiohttp
