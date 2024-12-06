@@ -1,10 +1,10 @@
-aiohttp
-botbuilder-core
-botbuilder-schema
-botbuilder-azure
-botbuilder-integration-aiohttp
-openai
-pinecone-client
-azure-search-documents
-gunicorn
-python-dotenv
+aiohttp==3.8.5
+botbuilder-core==4.15.0
+botbuilder-schema==4.15.0
+botbuilder-azure==4.15.0
+botbuilder-integration-aiohttp==4.15.0
+openai==0.27.7
+pinecone-client==2.2.0  # Elimina si no usas Pinecone
+azure-search-documents==11.3.0
+uvicorn==0.23.1
+python-dotenv==1.0.0
