@@ -1,6 +1,4 @@
-# GitHub Actions Workflow for deploying Python app to Azure Web App
-
-name: Build and deploy Python app to Azure Web App - Chatbotlangchain
+name: Build and deploy Python app to Azure Web App - ChatBotTeamsAlfa
 
 on:
   push:
@@ -11,6 +9,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      API_KEY: ${{ secrets.API_KEY }}
+      COSMOS_DB_CONTAINER_ID: ${{ secrets.COSMOS_DB_CONTAINER_ID }}
+      COSMOS_DB_DATABASE_ID: ${{ secrets.COSMOS_DB_DATABASE_ID }}
+      COSMOS_DB_PRIMARY_KEY: ${{ secrets.COSMOS_DB_PRIMARY_KEY }}
+      COSMOS_DB_URI: ${{ secrets.COSMOS_DB_URI }}
+      MicrosoftAppId: ${{ secrets.MicrosoftAppId }}
+      MicrosoftAppPassword: ${{ secrets.MicrosoftAppPassword }}
+      OPENAI: ${{ secrets.OPENAI }}
 
     steps:
       - uses: actions/checkout@v4
@@ -24,12 +31,12 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-      
+
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
+      # Optional: Add step to run tests here (e.g., PyTest)
+    
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
 
@@ -48,7 +55,7 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
+      id-token: write # Required for requesting the JWT
 
     steps:
       - name: Download artifact from build job
@@ -70,7 +77,17 @@ jobs:
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'Chatbotlangchain'
+          app-name: 'ChatBotTeamsAlfa'
           slot-name: 'Production'
-          package: './release.zip'
-          startup-command: 'gunicorn --chdir app main:app'
+          enable-app-settings: true
+          app-settings-json: |
+            {
+              "API_KEY": "${{ secrets.API_KEY }}",
+              "COSMOS_DB_CONTAINER_ID": "${{ secrets.COSMOS_DB_CONTAINER_ID }}",
+              "COSMOS_DB_DATABASE_ID": "${{ secrets.COSMOS_DB_DATABASE_ID }}",
+              "COSMOS_DB_PRIMARY_KEY": "${{ secrets.COSMOS_DB_PRIMARY_KEY }}",
+              "COSMOS_DB_URI": "${{ secrets.COSMOS_DB_URI }}",
+              "MicrosoftAppId": "${{ secrets.MicrosoftAppId }}",
+              "MicrosoftAppPassword": "${{ secrets.MicrosoftAppPassword }}",
+              "OPENAI": "${{ secrets.OPENAI }}"
+            }
