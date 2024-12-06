@@ -8,3 +8,5 @@ pinecone-client
 azure-search-documents
 uvicorn
 python-dotenv
+pydantic
+fastapi

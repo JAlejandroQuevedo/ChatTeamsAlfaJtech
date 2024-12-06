@@ -2,34 +2,33 @@ import sys
 import traceback
 from datetime import datetime
 from http import HTTPStatus
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
-from aiohttp import web
-from aiohttp.web import Request, Response, json_response
-
-from botbuilder.core import (
-    BotFrameworkAdapterSettings,
-    TurnContext,
-    BotFrameworkAdapter,
-)
+from botbuilder.core import BotFrameworkAdapterSettings, TurnContext, BotFrameworkAdapter
 from botbuilder.core.integration import aiohttp_error_middleware
 from botbuilder.schema import Activity, ActivityTypes
 
 from bots import alfabot
-
 from config import DefaultConfig
 
+# Configuración
 CONFIG = DefaultConfig()
 
-# Create adapter.
+# Crear adaptador
 SETTINGS = BotFrameworkAdapterSettings(CONFIG.APP_ID, CONFIG.APP_PASSWORD)
 ADAPTER = BotFrameworkAdapter(SETTINGS)
 
-# Catch-all for errors.
+# Manejo de errores global
 async def on_error(context: TurnContext, error: Exception):
-    print(f"\n [on_turn_error] unhandled error: {error}", file=sys.stderr)
+    """Manejamos errores durante el procesamiento de la actividad"""
+    print(f"\n[on_turn_error] error no manejado: {error}", file=sys.stderr)
     traceback.print_exc()
 
-    await context.send_activity("The bot encountered an error or bug.")
+    # Enviamos un mensaje al usuario
+    await context.send_activity("El bot ha encontrado un error o bug.")
+    
+    # Si estamos en el emulador, agregamos trazabilidad adicional
     if context.activity.channel_id == "emulator":
         trace_activity = Activity(
             label="TurnError",
@@ -43,54 +42,35 @@ async def on_error(context: TurnContext, error: Exception):
 
 ADAPTER.on_turn_error = on_error
 
-# Create the Bot
+# Crear la instancia del bot
 BOT = alfabot()
 
-# Listen for incoming requests on /api/messages
-async def messages(req: Request) -> Response:
-    if "application/json" in req.headers["Content-Type"]:
+# Endpoint de mensajes
+async def messages(req: Request):
+    if req.headers["Content-Type"] == "application/json":
         body = await req.json()
     else:
-        return Response(status=HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
+        return JSONResponse(status_code=HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
 
     activity = Activity().deserialize(body)
-    auth_header = req.headers["Authorization"] if "Authorization" in req.headers else ""
+    auth_header = req.headers.get("Authorization", "")
 
+    # Procesamos la actividad
     response = await ADAPTER.process_activity(activity, auth_header, BOT.on_turn)
+
     if response:
-        return json_response(data=response.body, status=response.status)
-    return Response(status=HTTPStatus.OK)
+        return JSONResponse(content=response.body, status_code=response.status)
+    
+    # Asegurarse de enviar una respuesta vacía con código OK (200)
+    return JSONResponse(content={}, status_code=HTTPStatus.OK)
 
-# Create the aiohttp application and add routes
-app = web.Application(middlewares=[aiohttp_error_middleware])
-app.router.add_post("/api/messages", messages)
+# Configuración de la aplicación FastAPI
+app = FastAPI()
 
-# Now adapt the aiohttp app for ASGI using the ASGIApp middleware
-from aiohttp import web
-from aiohttp.web import Application
-from uvicorn import Config, Server
+# Aseguramos que los endpoints están configurados correctamente
+app.post("/api/messages")(messages)
 
-# Create ASGI app using aiohttp
-asgi_app = web.Application(middlewares=[aiohttp_error_middleware])
-asgi_app.router.add_post("/api/messages", messages)
-
-# This wrapper allows running the aiohttp app as an ASGI app for uvicorn
-class ASGIApp:
-    def __init__(self, app: Application):
-        self.app = app
-
-    async def __call__(self, scope, receive, send):
-        await self.app(scope, receive, send)
-
-# If you're running this as the main app
+# Ejecutar la app usando uvicorn
 if __name__ == "__main__":
-    try:
-        # Wrap the app into an ASGI app
-        app_asgi = ASGIApp(asgi_app)
-        
-        # Use Uvicorn to serve the ASGI app
-        config = Config(app_asgi, host="0.0.0.0", port=3979)
-        server = Server(config)
-        server.run()
-    except Exception as error:
-        raise error
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=CONFIG.PORT or 3979)
