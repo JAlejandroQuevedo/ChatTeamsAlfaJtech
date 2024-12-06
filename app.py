@@ -64,6 +64,7 @@ async def messages(req: Request) -> Response:
 app = web.Application(middlewares=[aiohttp_error_middleware])
 app.router.add_post("/api/messages", messages)
 
+# Si estás utilizando `uvicorn` para el despliegue en ASGI:
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=3979)
+    uvicorn.run(app, host="0.0.0.0", port=3979)  # Cambia el puerto si es necesario
