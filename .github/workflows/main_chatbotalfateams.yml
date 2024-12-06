@@ -55,7 +55,7 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: Login to Azure
+      - name: Login to Azure using Service Principal
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A50AB4FF9FE54E30BF8E7326D734AA83 }}
