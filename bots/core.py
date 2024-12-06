@@ -18,7 +18,7 @@ from config import DefaultConfig
 
 CONFIG = DefaultConfig()
 load_dotenv()  # Carga las variables del archivo .env
-openai_key = os.environ.get('OPENAI_API_KEY ')
+openai_key = os.environ.get('OPENAI_API_KEY')
 openaiclient = OpenAI()
 
 
